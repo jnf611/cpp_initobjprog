@@ -8,17 +8,21 @@ using namespace std;
 class Patient
 {
 public:
+  // getters
+  double poids() const  {return _masse;};
+  double taille() const {return _hauteur;};
+
   void init(double masse, double hauteur)
   {
-    if (masse > 0.0) {
-      _masse = masse;
-    } else {
+    if (masse <= 0.0 || hauteur <= 0.0)
+    {
       _masse = 0.0;
-    }
-    if (hauteur > 0.0) {
-      _hauteur = hauteur;
-    } else {
       _hauteur = 0.0;
+    }
+    else
+    {
+      _masse = masse;
+      _hauteur = hauteur;
     }
   };
 

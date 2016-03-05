@@ -65,7 +65,7 @@ public:
     bool suffisant = false;
 
     solde = calculerSolde(budget);
-    if (solde > 0.0) {
+    if (solde >= 0.0) {
       suffisant = true;
     } else {
       solde = - solde; // on retourne une valeur positive

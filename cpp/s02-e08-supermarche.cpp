@@ -114,8 +114,8 @@ public:
 
 private:
 	const string _name;
-	const double _price;
-	const bool _inSale;
+	double _price; // la modelisation en const n'a pas de sens, le prix pourrait
+	bool _inSale; //très bien changer, alors que le nom ne changera pas.
 };
 
 //==============================================================================
@@ -145,7 +145,7 @@ public:
 
 private:
 	Article article;
-	int nb;
+	unsigned int nb; // réduire le domaine, une valeur négative n'a pas de sens
 };
 
 void Achat::display() const
@@ -166,7 +166,8 @@ suite).
 class Caddie
 {
 public:
-	Caddie() {};
+	//Caddie() {}; --> pas la peine de donner le constructeur, s'il correspond
+	//à celui par défault
 	void remplir(Article& article, int nb = 1);
 	double scanner() const;
 
@@ -224,6 +225,7 @@ public:
 	Caisse() : total(0.0) {};
 	void scanner(Caddie& caddie);
 	void afficher() const;
+
 private:
 	double total;
 };

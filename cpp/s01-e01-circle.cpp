@@ -92,7 +92,12 @@ int main()
 		
 	Circle c = createDefaultCircle();
 	Point p = c.getCenter();
-	cout << "c(" << p.x() << ", " << p.y() << ") radius = " << c.getRadius() << endl;
+	cout << "(" << (double)p.x() << ", " << p.y() << ") r = " << c.getRadius() << endl;
+	cout << p.to_string() << ", r = " << c.getRadius() << endl;
+	cout << p << ", r = " << c.getRadius() << endl;
+	cout << "to_string cpp11: " << c.to_string() << endl;
+	cout << "to_string cpp03: " << c.to_string_cpp03() << endl;
+	cout << "to_string ostream: " << c << endl;
 	
 	return 0;
 }

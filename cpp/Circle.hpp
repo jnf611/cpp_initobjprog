@@ -4,8 +4,13 @@
  * Circle.hpp
  * Model a circle figure
  */
+
+#include <string>
+#include <ostream>
+#include "Point.hpp"
  
-class Point;
+// class Point; // the forward declaration would be enough only if used with
+// pointers and references.
 
 class Circle
 {
@@ -22,6 +27,10 @@ public:
 	// other features
 	double surface() const;
 	bool inside(const Point& p) const;
+	const std::string to_string() const; // should this string returned as const ?
+	const std::string to_string_cpp03() const;
 };
+
+std::ostream& operator<<(std::ostream& o, const Circle& c);
 
 #endif //ifndef CIRCLE_H

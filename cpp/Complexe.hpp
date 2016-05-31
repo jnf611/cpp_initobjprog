@@ -52,6 +52,9 @@ private:
 // operator overload
 // replaced by internal overload: this is not necessary, external overload is
 // often advised
+// moreover, if the following operator if overloaded, then Complexe+=Complexe
+// and double + Complexe do not need to be overloaded, as implicit conversion
+// can be used
 //Complexe operator+(Complexe c, const Complexe& d);
 //not needed as the constructor is not explicit: it can construct a Complexe
 //from a a double

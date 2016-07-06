@@ -29,15 +29,6 @@ ostream& operator<<(ostream& os, Point& p)
 	return os << p.to_string();
 }
 
-enum e_color
-{
-	black,
-	blue,
-	green,
-	yellow,
-	red
-};
-
 class Figure
 {
 public:
@@ -58,29 +49,47 @@ ostream& operator<<(ostream& os, Figure& f)
 	return os << f.to_string();
 }
 
-class ColoredElement
+enum e_color
+{
+	black,
+	blue,
+	green,
+	yellow,
+	red
+};
+
+std::string color_to_string(e_color color)
+{
+	switch(color)
+	{
+	case black:  return "black";
+	case yellow: return "yellow";
+	case blue:   return "blue";
+	case green:  return "green";
+	case red:    return "red";
+	// no default
+	}
+	return "unknown color";
+}
+
+class ColoredFigure : public virtual Figure
 {
 public:
-	ColoredElement(e_color color = black) : _color(color) {};
+	ColoredFigure() {}
+	ColoredFigure(Point& origin, e_color color = black) :
+		Figure(origin), _color(color)
+	{}
 
-	std::string to_string() const
+	virtual std::string to_string() const
 	{
-		switch(_color)
-		{
-		case black:  return "black";
-		case yellow: return "yellow";
-		case blue:   return "blue";
-		case green:  return "green";
-		case red:    return "red";
-		default:     return "unknown color";
-		}
-	}
+		return Figure::to_string() + " " + color_to_string(_color);
+	};
 
 protected:
 	e_color _color;
 };
 
-class Rectangle : public Figure
+class Rectangle : public virtual Figure
 {
 public:
 	Rectangle() {}
@@ -111,17 +120,18 @@ ostream& operator<<(ostream& os, Rectangle& r)
 	return os << r.to_string();
 }
 
-class ColoredRectangle : public Rectangle, public ColoredElement
+class ColoredRectangle : public Rectangle, public ColoredFigure
 {
 public:
 	ColoredRectangle() {}
 	ColoredRectangle(Point& origin, double width = 0.0, double height = 0.0,
 		e_color color = black) :
-		Rectangle(origin, width, height), ColoredElement(color) {};
+		Rectangle(origin, width, height), ColoredFigure(origin, color)
+	{};
 
 	std::string to_string() const
 	{
-		return Rectangle::to_string() + " " + ColoredElement::to_string();
+		return Rectangle::to_string() + " " + color_to_string(_color);
 	}
 };
 

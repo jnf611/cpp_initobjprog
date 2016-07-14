@@ -50,7 +50,7 @@ public:
 		return *this;
 	}
 
-	double norm() const;
+	virtual double norm() const;
 
 	bool operator!() const
 	{
@@ -99,7 +99,7 @@ double operator*(const Vector3D& u, const Vector3D& v)
 
 double Vector3D::norm() const
 {
-	return (Vector3D(*this) * Vector3D(*this));
+	return sqrt((*this) * (*this));
 }
 
 double angle(const Vector3D& u, const Vector3D& v)
@@ -111,6 +111,87 @@ double angle(const Vector3D& u, const Vector3D& v)
 std::ostream& operator<<(std::ostream& os, const Vector3D& v)
 {
 	return os << v.to_string();
+}
+
+const Vector3D nullVector3D;
+
+class UnitVector3D : public Vector3D
+{
+public:
+	UnitVector3D(double x = 0.0, double y=0.0, double z = 0.0);
+	UnitVector3D(const Vector3D& v);
+	virtual double norm();
+	//overload
+	UnitVector3D& operator+=(const UnitVector3D& v);
+	UnitVector3D& operator-=(const UnitVector3D& v);
+	UnitVector3D& operator*=(double c);
+
+private:
+	void normalize();
+};
+
+UnitVector3D::UnitVector3D(double x, double y, double z) :
+	Vector3D(x, y, z)
+{
+	if (!*this)
+	{
+		x = 1.0;
+	}
+	else
+	{
+		normalize();
+	}
+}
+
+UnitVector3D::UnitVector3D(const Vector3D& v) :
+	UnitVector3D(v.x, v.y, v.z)
+{}
+
+double UnitVector3D::norm()
+{
+	return 1.0;
+}
+
+void UnitVector3D::normalize()
+{
+	double n = Vector3D::norm();
+	if (n > 0.0)
+	{
+		this->Vector3D::operator*=(1/n);
+	}
+}
+
+UnitVector3D& UnitVector3D::operator+=(const UnitVector3D& v)
+{
+	Vector3D tmp(*this);
+	tmp += v;
+	if (tmp != null)
+	{
+		*this = UnitVector3D(tmp);
+	}
+	return *this;
+}
+
+UnitVector3D& UnitVector3D::operator-=(const UnitVector3D& v)
+{
+	Vector3D tmp(*this);
+	tmp -= v;
+	if (tmp != null)
+	{
+		*this = UnitVector3D(tmp);
+	}
+	return *this;
+}
+
+// multiplication par un scalaire , ne fait rien
+UnitVector3D& UnitVector3D::operator*=(double c)
+{
+	return *this;
+}
+
+double angle(const UnitVector3D& u, const UnitVector3D& v)
+{
+	return acos(u * v);
 }
 
 #endif // VECTOR_3D_H

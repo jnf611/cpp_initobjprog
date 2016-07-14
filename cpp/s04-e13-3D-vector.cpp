@@ -50,5 +50,14 @@ int main()
 	a = v * 3;
 	cout << a << endl;
 
+	UnitVector3D i(1.0);
+	UnitVector3D j(0.0, 1.0);
+	cout << "i: " << i << endl;
+	cout << "j: " << j << endl;
+	cout << "i + j: " << i + j << endl;
+	i += j;
+	cout << "i:" << i << endl;
+	i -= j;
+
 	return 0;
 }

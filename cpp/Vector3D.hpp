@@ -8,7 +8,9 @@
 class Vector3D : public Point3D_2
 {
 public:
-	Vector3D(double x = 0.0, double y = 0.0, double z = 0.0) :
+	// force declaration of all parameters (or use an additionnal default const
+	// for the null vector
+	Vector3D(double x, double y, double z) :
 		Point3D_2(x, y, z)
 	{}
 
@@ -22,7 +24,7 @@ public:
 		z += v.z;
 		return *this;
 	}
-	Vector3D operator-() const
+	const Vector3D operator-() const // the return result is a const
 	{
 		return Vector3D(-x, -y, -z);
 	}
@@ -61,30 +63,30 @@ protected:
 	static const Vector3D null;
 };
 
-const Vector3D Vector3D::null;
+const Vector3D Vector3D::null(0.0, 0.0, 0.0);
 
-Vector3D operator+(Vector3D u, const Vector3D& v)
+const Vector3D operator+(Vector3D u, const Vector3D& v) // const return
 {
 	return u += v;
 }
 
-Vector3D operator-(Vector3D u, const Vector3D& v)
+const Vector3D operator-(Vector3D u, const Vector3D& v) // const return
 {
 	return u += -v;
 }
 
 // multiplication par un scalaire
-Vector3D operator*(double c, Vector3D v)
+const Vector3D operator*(double c, Vector3D v) // const return
 {
 	return v *= c;
 }
 
-Vector3D operator*(Vector3D v, double c)
+const Vector3D operator*(Vector3D v, double c) // const return
 {
 	return c * v;
 }
 
-Vector3D operator/(double c, Vector3D v)
+const Vector3D operator/(double c, Vector3D v) // const return
 {
 	return v /= c;
 }
@@ -113,13 +115,14 @@ std::ostream& operator<<(std::ostream& os, const Vector3D& v)
 	return os << v.to_string();
 }
 
-const Vector3D nullVector3D;
+const Vector3D nullVector3D(0.0, 0.0, 0.0);
 
 class UnitVector3D : public Vector3D
 {
 public:
-	UnitVector3D(double x = 0.0, double y=0.0, double z = 0.0);
-	UnitVector3D(const Vector3D& v);
+	UnitVector3D();
+	UnitVector3D(double x, double y, double z);
+	explicit UnitVector3D(const Vector3D& v);
 	virtual double norm();
 	//overload
 	UnitVector3D& operator+=(const UnitVector3D& v);
@@ -130,18 +133,23 @@ private:
 	void normalize();
 };
 
+UnitVector3D::UnitVector3D() :
+	Vector3D(1.0, 0.0, 0.0) // choix par defaut pour assurer un vecteur non nul
+{}
+
 UnitVector3D::UnitVector3D(double x, double y, double z) :
 	Vector3D(x, y, z)
 {
-	if (!*this)
-	{
-		x = 1.0;
-	}
-	else
-	{
-		normalize();
-	}
+	normalize();
 }
+
+// Plusieurs fois lors qu'une opération modifie le caractère unitaire d'un
+// vecteur unitaire:
+// - arrêter l'exécution (assert)
+// - afficher un message d'erreur
+// - empecher l'exécution en la rendant private (casse le caractère "est un" ?)
+// - forcer la normalisation
+// - lever une exception
 
 UnitVector3D::UnitVector3D(const Vector3D& v) :
 	UnitVector3D(v.x, v.y, v.z)
@@ -159,33 +167,31 @@ void UnitVector3D::normalize()
 	{
 		this->Vector3D::operator*=(1/n);
 	}
+	else
+	{
+		*this = UnitVector3D();
+	}
 }
 
 UnitVector3D& UnitVector3D::operator+=(const UnitVector3D& v)
 {
-	Vector3D tmp(*this);
-	tmp += v;
-	if (tmp != null)
-	{
-		*this = UnitVector3D(tmp);
-	}
+	Vector3D::operator+=(v);
+	normalize();
 	return *this;
 }
 
 UnitVector3D& UnitVector3D::operator-=(const UnitVector3D& v)
 {
-	Vector3D tmp(*this);
-	tmp -= v;
-	if (tmp != null)
-	{
-		*this = UnitVector3D(tmp);
-	}
+	Vector3D::operator+=(v);
+	normalize();
 	return *this;
 }
 
 // multiplication par un scalaire , ne fait rien
 UnitVector3D& UnitVector3D::operator*=(double c)
 {
+	Vector3D::operator*=(c);
+	normalize();
 	return *this;
 }
 

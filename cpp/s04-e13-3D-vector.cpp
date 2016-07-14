@@ -34,9 +34,9 @@ int main()
 		<< string((point1==point2)?"identique au":"différent du")
 		<< " point 3." << endl;
 
-	Vector3D null;
-	Vector3D v(0.0, 1.0);
-	Vector3D a(2.0, 1.0);
+	Vector3D null(0.0, 0.0, 0.0);
+	Vector3D v(0.0, 1.0, 0.0);
+	Vector3D a(2.0, 1.0, 0.0);
 	cout << "Vecteur null: " << null << endl;
 	cout << "v: " << v << endl;
 	a += v;
@@ -50,9 +50,9 @@ int main()
 	a = v * 3;
 	cout << a << endl;
 
-	UnitVector3D i(1.0);
-	UnitVector3D j(0.0, 1.0);
+	UnitVector3D i(1.0, 0.0, 0.0);
 	cout << "i: " << i << endl;
+	UnitVector3D j(0.0, 1.0, 0.0);
 	cout << "j: " << j << endl;
 	cout << "i + j: " << i + j << endl;
 	i += j;

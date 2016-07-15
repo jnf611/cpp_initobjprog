@@ -30,8 +30,9 @@ public:
 	virtual Figure* copie() const
 	{
 		LOG_FUNC();
-		Figure* c = new Cercle(*this);
-		return c;
+		/*Figure* c = new Cercle(*this);
+		return c;*/ // can be written on one line
+		return new Cercle(*this);
 	}
 
 private:
@@ -63,8 +64,9 @@ public:
 	virtual Figure* copie() const
 	{
 		LOG_FUNC();
-		Figure* t = new Triangle(*this);
-		return t;
+		/*Figure* t = new Triangle(*this);
+		return t;*/ // can be written on one line
+		return new Triangle(*this);
 	}
 
 private:
@@ -88,8 +90,9 @@ public:
 	virtual Figure* copie() const
 	{
 		LOG_FUNC();
-		Figure* c = new Carre(*this);
-		return c;
+		/*Figure* c = new Carre(*this);
+		return c;*/ // can be written on one line
+		return new Carre(*this);
 	}
 
 private:

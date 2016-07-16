@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <memory> // for unique_ptr
 using namespace std;
 
 #define LOG_FUNC() cout << __PRETTY_FUNCTION__ << endl
@@ -144,6 +145,43 @@ void unCercleDePlus(Dessin const& img)
 	tmp.affiche();
 }
 
+class Dessin2
+{
+public:
+	Dessin2() { LOG_FUNC(); }
+	Dessin2(const Dessin2& d)
+	{
+		for (auto& f : d.figures)
+		{
+			figures.push_back(unique_ptr<Figure>(f->copie()));
+		}
+	}
+	~Dessin2() { LOG_FUNC(); }
+
+	void ajoute_figure(const Figure& f)
+	{
+		figures.push_back(unique_ptr<Figure>(f.copie()));
+	}
+	void affiche()
+	{
+		for (auto& f : figures)
+		{
+			f->affiche();
+		}
+	}
+
+private:
+	vector<unique_ptr<Figure>> figures;
+};
+
+void unCercleDePlus(Dessin2 const& img)
+{
+	Dessin2 tmp(img);
+	tmp.ajoute_figure(Cercle(1));
+	cout << "Affichage de 'tmp': " << endl;
+	tmp.affiche();
+}
+
 int main()
 {
 	Cercle c(1.0);
@@ -159,6 +197,17 @@ int main()
 	dessin.affiche();
 
 	unCercleDePlus(dessin);
+
+	// with unique_ptr
+	Dessin2 dessin2;
+	dessin2.ajoute_figure(t);
+	dessin2.ajoute_figure(c);
+	dessin2.ajoute_figure(Triangle(5.0, 1.0));
+	dessin2.ajoute_figure(ca);
+
+	dessin2.affiche();
+
+	unCercleDePlus(dessin2);
 
 	return 0;
 }

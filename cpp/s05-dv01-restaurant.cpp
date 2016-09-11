@@ -29,7 +29,6 @@ public:
 	Ingredient(const Produit& produit, double quantite = 1.0)
 		: produit(produit), quantite(quantite)
 	{}
-	const string& getNom() const { return produit.getNom(); }
 	const Produit& getProduit() const { return produit; }
 	double getQuantite() const { return quantite; }
 	string descriptionAdaptee() const;
@@ -41,6 +40,7 @@ private:
 
 string Ingredient::descriptionAdaptee() const
 {
+	// Necessite la méthode adapter sur les produits
 	// Exemple: 2.000000 gouttes de extrait d’amandes
 	string s = to_string(quantite) + " " + produit.getUnite() + " de "
 		+ produit.toString();
@@ -57,6 +57,7 @@ public:
 	void ajouter(const Produit& produit, double quantite);
 	string toString() const;
 	double quantiteTotale(const string& nom) const;
+	Recette adapter(double n) const;
 
 private:
 	vector<Ingredient*> ingredients;
@@ -75,7 +76,7 @@ Recette::~Recette()
 
 void Recette::ajouter(const Produit& produit, double quantite)
 {
-	ingredients.push_back(new Ingredient(produit, quantite));
+	ingredients.push_back(new Ingredient(produit, nbFois_*quantite));
 }
 
 /**
@@ -101,13 +102,23 @@ double Recette::quantiteTotale(const string& nom) const
 {
 	for (auto i : ingredients)
 	{
-		if (nom.compare(i->getNom()) == 0)
+		if (nom.compare(i->getProduit().getNom()) == 0)
 		{
 			return i->getQuantite()*nbFois_;
 		}
 	}
 	// when not found, return 0
 	return 0.0;
+}
+
+Recette Recette::adapter(double n) const
+{
+	Recette r(nom, n);
+	for (auto i : ingredients)
+	{
+		r.ingredients.push_back(new Ingredient(i->getProduit(), n*i->getQuantite()/nbFois_));
+	}
+	return r;
 }
 
 class ProduitCuisine : public Produit
@@ -182,19 +193,19 @@ int main()
   cout << endl;
 
   // double recette
-  /*Recette doubleRecette = recette.adapter(2);
+  Recette doubleRecette = recette.adapter(2);
   cout << "===  Recette finale x 2 ===" << endl;
   cout << doubleRecette.toString() << endl;
 
   afficherQuantiteTotale(doubleRecette, beurre);
   afficherQuantiteTotale(doubleRecette, oeufs);
-  //afficherQuantiteTotale(doubleRecette, extraitAmandes);
-  //afficherQuantiteTotale(doubleRecette, glacage);
+  afficherQuantiteTotale(doubleRecette, extraitAmandes);
+  afficherQuantiteTotale(doubleRecette, glacage);
   cout << endl;
 
   cout << "===========================\n" << endl;
   cout << "Vérification que le glaçage n'a pas été modifié :\n";
-  cout << glacage.toString() << endl;*/
+  cout << glacage.toString() << endl;
 
   return 0;
 }

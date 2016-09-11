@@ -14,8 +14,9 @@ public:
 	Produit(const string& nom, const string& unite = "")
 		: nom(nom), unite(unite)
 	{}
-	string getNom() const { return nom; }
-	string getUnite() const { return unite; }
+	const string& getNom() const { return nom; }
+	const string& getUnite() const { return unite; }
+	virtual string toString() const { return getNom(); }
 
 private:
 	string nom;
@@ -28,13 +29,23 @@ public:
 	Ingredient(const Produit& produit, double quantite = 1.0)
 		: produit(produit), quantite(quantite)
 	{}
-	string getNom() const { return produit.getNom(); }
+	const string& getNom() const { return produit.getNom(); }
+	const Produit& getProduit() const { return produit; }
 	double getQuantite() const { return quantite; }
+	string descriptionAdaptee() const;
 
 private:
-	Produit produit;
+	const Produit& produit;
 	double quantite;
 };
+
+string Ingredient::descriptionAdaptee() const
+{
+	// Exemple: 2.000000 gouttes de extrait d’amandes
+	string s = to_string(quantite) + " " + produit.getUnite() + " de "
+		+ produit.toString();
+	return s;
+}
 
 class Recette
 {
@@ -44,7 +55,7 @@ public:
 	{}
 	~Recette();
 	void ajouter(const Produit& produit, double quantite);
-	string toString() const { return nom; };
+	string toString() const;
 	double quantiteTotale(const string& nom) const;
 
 private:
@@ -67,6 +78,25 @@ void Recette::ajouter(const Produit& produit, double quantite)
 	ingredients.push_back(new Ingredient(produit, quantite));
 }
 
+/**
+ * Exemple de formatage
+Recette "glaçage au chocolat parfumé" x 1:
+1. 2.000000 gouttes de extrait d’amandes
+2. 1.000000 portion(s) de glaçage au chocolat
+ */
+string Recette::toString() const
+{
+	string s = "  Recette \"" + nom + "\" x " + to_string(int(nbFois_)) + ":\n";
+	for (size_t i = 0; i < ingredients.size(); ++i)
+	{
+		s += "  " + to_string(i+1) + ". "
+			+ ingredients[i]->descriptionAdaptee();
+		if (i < ingredients.size() - 1)
+			s += "\n";
+	}
+	return s;
+}
+
 double Recette::quantiteTotale(const string& nom) const
 {
 	for (auto i : ingredients)
@@ -76,8 +106,31 @@ double Recette::quantiteTotale(const string& nom) const
 			return i->getQuantite()*nbFois_;
 		}
 	}
-	// when not found, return null
+	// when not found, return 0
 	return 0.0;
+}
+
+class ProduitCuisine : public Produit
+{
+public:
+	ProduitCuisine(const string& nom)
+		: Produit(nom, "portion(s)"), recette(nom)
+	{}
+	void ajouterARecette(const Produit& produit, double quantite);
+	virtual string toString() const;
+
+private:
+	Recette recette;
+};
+
+void ProduitCuisine::ajouterARecette(const Produit& produit, double quantite)
+{
+	recette.ajouter(produit, quantite);
+}
+
+string ProduitCuisine::toString() const
+{
+	return Produit::toString() + "\n" + recette.toString();
 }
 
 /*******************************************
@@ -101,7 +154,7 @@ int main()
   Produit amandesMoulues("amandes moulues", "grammes");
   Produit extraitAmandes("extrait d'amandes", "gouttes");
 
-  /*ProduitCuisine glacage("glaçage au chocolat");
+  ProduitCuisine glacage("glaçage au chocolat");
   // recette pour une portion de glaçage:
   glacage.ajouterARecette(chocolatNoir, 200);
   glacage.ajouterARecette(beurre, 25);
@@ -114,14 +167,14 @@ int main()
 
   glacageParfume.ajouterARecette(extraitAmandes, 2);
   glacageParfume.ajouterARecette(glacage, 1);
-  cout << glacageParfume.toString() << endl;*/
+  cout << glacageParfume.toString() << endl;
 
   Recette recette("tourte glacée au chocolat");
   recette.ajouter(oeufs, 5);
   recette.ajouter(farine, 150);
   recette.ajouter(beurre, 100);
   recette.ajouter(amandesMoulues, 50);
-  //recette.ajouter(glacageParfume, 2);
+  recette.ajouter(glacageParfume, 2);
 
   cout << "===  Recette finale  =====" << endl;
   cout << recette.toString() << endl;

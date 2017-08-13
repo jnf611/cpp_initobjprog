@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
+#include <string>
 
 using namespace std;
 
@@ -17,8 +18,9 @@ public:
 	const string& getNom() const { return nom; }
 	const string& getUnite() const { return unite; }
 	virtual string toString() const { return getNom(); }
+	virtual const Produit* adapter(double n) { return this; }
 
-private:
+protected:
 	string nom;
 	string unite;
 };
@@ -68,9 +70,8 @@ private:
 Recette::~Recette()
 {
 	for (auto i : ingredients)
-	{
 		delete i;
-	}
+
 	ingredients.clear();
 }
 
@@ -116,7 +117,7 @@ Recette Recette::adapter(double n) const
 	Recette r(nom, n);
 	for (auto i : ingredients)
 	{
-		r.ingredients.push_back(new Ingredient(i->getProduit(), n*i->getQuantite()/nbFois_));
+		r.ingredients.push_back(new Ingredient(i->getProduit(), i->getQuantite()/nbFois_));
 	}
 	return r;
 }
@@ -129,6 +130,7 @@ public:
 	{}
 	void ajouterARecette(const Produit& produit, double quantite);
 	virtual string toString() const;
+	virtual const ProduitCuisine* adapter(double n);
 
 private:
 	Recette recette;
@@ -142,6 +144,16 @@ void ProduitCuisine::ajouterARecette(const Produit& produit, double quantite)
 string ProduitCuisine::toString() const
 {
 	return Produit::toString() + "\n" + recette.toString();
+}
+
+/*une méthode const ProduitCuisine* adapter(double n) retournant
+un pointeur sur un nouveau produit cuisiné correspondant au produit
+courant dont la recette est adaptée n fois;*/
+const ProduitCuisine* ProduitCuisine::adapter(double n)
+{
+	cout << "[D]ProduitCuisine::adapter(" << n << "):" << nom << endl;
+	recette = recette.adapter(n);
+	return this;
 }
 
 /*******************************************
